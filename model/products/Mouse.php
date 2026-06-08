@@ -1,7 +1,7 @@
 <?php
-require_once 'HardwareItem.php';
+require_once 'ProdutoItem.php';
 
-class Mouse extends HardwareItem {
+class Mouse extends ProdutoItem {
     public function getCategoryName() {
         return "Mouses Cyber";
     }

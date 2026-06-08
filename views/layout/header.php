@@ -2,6 +2,15 @@
 // Simulação da página atual para ativar os links
 $current_page = basename($_SERVER['PHP_SELF']);
 ?>
+<?php
+// Calcula dinamicamente quantos itens existem no carrinho
+$totalItensCarrinho = 0;
+if (isset($_SESSION['carrinho'])) {
+    foreach ($_SESSION['carrinho'] as $item) {
+        $totalItensCarrinho += $item['quantidade'];
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -33,7 +42,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 <li>
                     <a href="carrinho.php" class="<?php echo ($current_page == 'carrinho.php') ? 'active-link' : ''; ?>">
                         <i class="fas fa-shopping-cart"></i> Cart 
-                        <span class="carrinho-contador"><?php echo isset($totalItensCarrinho) ? $totalItensCarrinho : 0; ?></span>
+                        <span class="carrinho-contador"><?php echo $totalItensCarrinho; ?></span>
                     </a>
                 </li>
 

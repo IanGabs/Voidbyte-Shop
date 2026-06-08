@@ -33,25 +33,6 @@
             © <?php echo date('Y'); ?> Voidbyte Shop. Conexão criptografada.
         </div>
     </footer>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const profileTrigger = document.getElementById('profileTrigger');
-            const profileDropdown = document.getElementById('profileDropdown');
-
-            if (profileTrigger && profileDropdown) {
-                profileTrigger.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    profileDropdown.classList.toggle('show');
-                });
-
-                document.addEventListener('click', (e) => {
-                    if (!profileDropdown.contains(e.target) && !profileTrigger.contains(e.target)) {
-                        profileDropdown.classList.remove('show');
-                    }
-                });
-            }
-        });
-    </script>
+    <script src="assets/js/main.js"></script>
 </body>
 </html>

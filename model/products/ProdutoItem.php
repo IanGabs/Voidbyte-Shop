@@ -1,5 +1,5 @@
 <?php
-abstract class HardwareItem {
+abstract class ProdutoItem {
     protected $nome;
     protected $preco;
     protected $descricao;
@@ -10,11 +10,11 @@ abstract class HardwareItem {
         $this->descricao = $descricao;
     }
 
-    // Método obrigatório para definir aonde o produto pertence
+    // Define a qual categoria o produto pertence
     abstract public function getCategoryName();
 
     public function getDetails() {
-        return "Hardware: {$this->nome} | Preço: R$ {$this->preco} | Categoria: " . $this->getCategoryName();
+        return "Produto: {$this->nome} | Preço: R$ {$this->preco} | Categoria: " . $this->getCategoryName();
     }
 }
 ?>

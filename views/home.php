@@ -82,9 +82,14 @@
                             
                             <p class="desc"><?php echo $produto['descricao']; ?></p>
                             
-                            <button class="btn-adicionar-carrinho" data-produto-id="<?php echo $produto['id']; ?>">
-                                <i class="fas fa-cart-plus"></i> Adicionar
-                            </button>
+                            <form method="POST" action="carrinho.php" style="width: 100%; margin-top: auto;">
+                                <input type="hidden" name="action" value="add">
+                                <input type="hidden" name="produto_id" value="<?php echo $produto['id']; ?>">
+                                <input type="hidden" name="quantidade" value="1">
+                                <button type="submit" class="btn-adicionar-carrinho">
+                                    <i class="fas fa-cart-plus"></i> Adicionar
+                                </button>
+                            </form>
                         </div>
                     </div>
                 <?php endforeach; ?>
