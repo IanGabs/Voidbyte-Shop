@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 09/06/2026 às 00:18
+-- Tempo de geração: 10/06/2026 às 00:40
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -34,6 +34,7 @@ CREATE TABLE `produtos` (
   `preco` decimal(10,2) NOT NULL,
   `imagem` varchar(255) NOT NULL DEFAULT './assets/imgs/default-hardware.png',
   `categoria` varchar(100) NOT NULL,
+  `especificacoes` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`especificacoes`)),
   `desconto` decimal(5,2) DEFAULT 0.00,
   `data_criacao` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -42,10 +43,12 @@ CREATE TABLE `produtos` (
 -- Despejando dados para a tabela `produtos`
 --
 
-INSERT INTO `produtos` (`id`, `nome`, `descricao`, `preco`, `imagem`, `categoria`, `desconto`, `data_criacao`) VALUES
-(1, 'Teclado Mecânico Void Minimalist', 'Switches silenciosos, chassi de alumínio escovado e retroiluminação roxa.', 599.90, './assets/imgs/default-hardware.png', 'Teclados Mecânicos', 15.00, '2026-06-08 17:37:58'),
-(2, 'Mousepad Neural Cyber', 'Superfície de microfibra escura com bordas costuradas em fio óptico.', 129.90, './assets/imgs/default-hardware.png', 'Mouses Cyber', 0.00, '2026-06-08 17:37:58'),
-(3, 'Monitor Dark Mode 144Hz', 'Painel IPS de 27 polegadas com calibração profunda para níveis de preto perfeitos.', 1499.90, './assets/imgs/default-hardware.png', 'Monitores', 0.00, '2026-06-08 17:37:58');
+INSERT INTO `produtos` (`id`, `nome`, `descricao`, `preco`, `imagem`, `categoria`, `especificacoes`, `desconto`, `data_criacao`) VALUES
+(1, 'Teclado Mecânico Void Minimalist', 'Switches silenciosos, chassi de alumínio escovado e retroiluminação roxa.', 599.90, './assets/imgs/default-hardware.png', 'Teclados Mecânicos', NULL, 15.00, '2026-06-08 17:37:58'),
+(2, 'Mousepad Neural Cyber', 'Superfície de microfibra escura com bordas costuradas em fio óptico.', 129.90, './assets/imgs/default-hardware.png', 'Mouses Cyber', NULL, 0.00, '2026-06-08 17:37:58'),
+(3, 'Monitor Dark Mode 144Hz', 'Painel IPS de 27 polegadas com calibração profunda para níveis de preto perfeitos.', 1499.90, './assets/imgs/default-hardware.png', 'Monitores', NULL, 0.00, '2026-06-08 17:37:58'),
+(5, 'Mouse Do Void', 'teste', 300.00, './assets/imgs/default-hardware.png', 'Mouses Cyber', '{\"Sensor\": \"Óptico 16K\", \"Peso\": \"65g\", \"Botões\": \"6\", \"Conexão\": \"Wireless\"}', 0.00, '2026-06-09 19:53:38'),
+(6, 'Mouse Cyberpunk', 'teste 2', 250.00, './assets/imgs/default-hardware.png', 'Mouses Cyber', '{\"Sensor\": \"Laser 25K\", \"Peso\": \"80g\", \"Botões\": \"8\", \"Conexão\": \"Cabo USB-C\"}', 0.00, '2026-06-09 19:54:45');
 
 -- --------------------------------------------------------
 
@@ -96,7 +99,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT de tabela `produtos`
 --
 ALTER TABLE `produtos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT de tabela `usuarios`
