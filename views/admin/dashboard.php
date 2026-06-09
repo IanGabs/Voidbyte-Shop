@@ -11,6 +11,10 @@
             <div class="success-message"><i class="fas fa-check-circle"></i> <?php echo $_SESSION['admin_msg']; unset($_SESSION['admin_msg']); ?></div>
         <?php endif; ?>
 
+        <?php if (isset($_SESSION['admin_erro'])): ?>
+            <div class="error-message"><i class="fas fa-exclamation-triangle"></i> <?php echo $_SESSION['admin_erro']; unset($_SESSION['admin_erro']); ?></div>
+        <?php endif; ?>
+
         <div class="form-section" style="margin-bottom: 3rem;">
             <h3><i class="fas fa-plus"></i> Adicionar Novo Hardware</h3>
             
@@ -21,10 +25,44 @@
                     <div class="form-group">
                         <label>Tipo (Factory Method)</label>
                         <select name="tipo" class="input-modern" required>
-                            <option value="" disabled selected>Selecione a linha de produção...</option>
-                            <option value="teclado">Teclado Mecânico</option>
-                            <option value="mouse">Mouse Cyber</option>
-                            <option value="monitor">Monitor Dark Mode</option>
+                            <option value="" disabled selected>Selecione a categoria do produto...</option>
+
+                                <optgroup label="Periféricos Principais">
+                                    <option value="teclado">Teclado Mecânico</option>
+                                    <option value="mouse">Mouse Cyber</option>
+                                </optgroup>
+
+                                <optgroup label="Áudio e Imagem">
+                                    <option value="monitor">Monitor (Gamer / Profissional)</option>
+                                    <option value="headset">Headset e Fones de Ouvido</option>
+                                    <option value="webcam">Webcam e Streaming</option>
+                                    <option value="microfone">Microfones de Estúdio</option>
+                                    <option value="vr">Óculos de Realidade Virtual (VR)</option>
+                                </optgroup>
+
+                                <optgroup label="Hardware Interno de PC">
+                                    <option value="cpu">Processador (CPU)</option>
+                                    <option value="gpu">Placa de Vídeo (GPU)</option>
+                                    <option value="motherboard">Placa-Mãe</option>
+                                    <option value="ram">Memória RAM</option>
+                                    <option value="storage">Armazenamento (SSD / NVMe / HDD)</option>
+                                    <option value="psu">Fonte de Alimentação</option>
+                                    <option value="cooler">Refrigeração (Air/Watercooler)</option>
+                                    <option value="gabinete">Gabinete</option>
+                                </optgroup>
+
+                                <optgroup label="Eletrônicos e Setup Geral">
+                                    <option value="nobreak">Nobreak, Filtros e Energia</option>
+                                    <option value="roteador">Roteadores e Equipamentos de Rede</option>
+                                    <option value="impressora">Impressoras e Componentes 3D</option>
+                                </optgroup>
+
+                                <optgroup label="Móveis e Acessórios">
+                                    <option value="cadeira">Cadeiras Ergonômicas e Gamer</option>
+                                    <option value="mesa">Mesas Tech</option>
+                                    <option value="hub">Hubs USB, Docks e Conectividade</option>
+                                    <option value="cabos">Cabos e Adaptadores</option>
+                                </optgroup>
                         </select>
                     </div>
                     <div class="form-group">
@@ -47,6 +85,11 @@
                 <div class="form-group full-width">
                     <label>Descrição</label>
                     <textarea name="descricao" class="input-modern" required></textarea>
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Especificações Técnicas (Formato JSON) <small style="color: var(--cyan);">Opcional</small></label>
+                    <textarea name="especificacoes" class="input-modern" placeholder='Ex: {"Painel": "IPS", "Frequência": "144Hz", "Resposta": "1ms"}' style="font-family: monospace; min-height: 80px;"></textarea>
                 </div>
 
                 <div class="form-actions right">

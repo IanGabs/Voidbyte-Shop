@@ -1,43 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // ==========================================
-    // LÓGICA DE ADIÇÃO SILENCIOSA AO CARRINHO (AJAX)
-    // ==========================================
-    const formsAdicionar = document.querySelectorAll('form[action="carrinho.php"]');
-    
-    formsAdicionar.forEach(form => {
-        const actionInput = form.querySelector('input[name="action"]');
-        
-        // Só intercepta se for o formulário de ADICIONAR
-        if (actionInput && actionInput.value === 'add') {
-            form.addEventListener('submit', function(e) {
-                e.preventDefault(); 
-
-                const formData = new FormData(this);
-                formData.append('ajax', '1'); 
-
-                fetch('carrinho.php', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        // 1. Atualiza a bolinha laranja no header
-                        const contador = document.querySelector('.carrinho-contador');
-                        if (contador) {
-                            contador.textContent = data.total_itens;
-                            contador.style.transform = 'scale(1.5)';
-                            setTimeout(() => contador.style.transform = 'scale(1)', 200);
-                        }
-
-                        // 2. Aciona o Toast na tela
-                        mostrarNotificacao(data.msg);
-                    }
-                })
-                .catch(error => console.error('Falha de conexão na API do carrinho:', error));
-            });
-        }
-    });
 
     // ==========================================
     // LÓGICA DE CARRINHO SILENCIOSA (AJAX GERAL)
@@ -50,10 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!actionInput) return;
 
             const action = actionInput.value;
-
-            // Interceta as 3 ações (Adicionar, Atualizar quantidade e Remover)
             if (action === 'add' || action === 'update' || action === 'remove') {
-                e.preventDefault(); 
+                e.preventDefault(); // Impede o redirecionamento da página
 
                 const formData = new FormData(this);
                 formData.append('ajax', '1'); 

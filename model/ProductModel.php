@@ -9,10 +9,23 @@ class ProductModel {
     }
 
     // CREATE
-    public function createProduct($nome, $descricao, $preco, $imagem, $categoria, $desconto = 0) {
-        $stmt = $this->conn->prepare("INSERT INTO produtos (nome, descricao, preco, imagem, categoria, desconto) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssdssd", $nome, $descricao, $preco, $imagem, $categoria, $desconto);
-        return $stmt->execute();
+    public function createProduct($nome, $descricao, $preco, $imagem, $categoria, $desconto = 0, $especificacoes = null) {
+        $sql = "INSERT INTO produtos (nome, descricao, preco, imagem, categoria, desconto, especificacoes) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($sql);
+        
+        // Se a coluna não existir ou houver erro de sintaxe no SQL, o erro rebenta aqui:
+        if (!$stmt) {
+            die("<div style='background:#222; color:#ff4444; padding:20px; border-left: 4px solid #ff4444; font-family:monospace; font-size:16px;'><b>ERRO SQL (Prepare):</b> " . $this->conn->error . "<br><br>Verifique se executou o comando ALTER TABLE no phpMyAdmin para adicionar a coluna 'especificacoes'.</div>");
+        }
+
+        $stmt->bind_param("ssdssds", $nome, $descricao, $preco, $imagem, $categoria, $desconto, $especificacoes);
+        
+        // Se falhar na hora de inserir os dados (ex: JSON mal formatado a tentar entrar na BD):
+        if (!$stmt->execute()) {
+            die("<div style='background:#222; color:#ff4444; padding:20px; border-left: 4px solid #ff4444; font-family:monospace; font-size:16px;'><b>ERRO SQL (Execute):</b> " . $stmt->error . "</div>");
+        }
+        
+        return true;
     }
 
     // READ (Todos)
@@ -31,10 +44,20 @@ class ProductModel {
     }
 
     // UPDATE
-    public function updateProduct($id, $nome, $descricao, $preco, $categoria, $desconto = 0) {
-        $stmt = $this->conn->prepare("UPDATE produtos SET nome=?, descricao=?, preco=?, categoria=?, desconto=? WHERE id=?");
-        $stmt->bind_param("ssdssi", $nome, $descricao, $preco, $categoria, $desconto, $id);
-        return $stmt->execute();
+    public function updateProduct($id, $nome, $descricao, $preco, $categoria, $desconto = 0, $especificacoes = null) {
+        $sql = "UPDATE produtos SET nome=?, descricao=?, preco=?, categoria=?, desconto=?, especificacoes=? WHERE id=?";
+        $stmt = $this->conn->prepare($sql);
+        
+        if (!$stmt) {
+            die("<div style='background:#222; color:#ff4444; padding:20px; border-left: 4px solid #ff4444; font-family:monospace; font-size:16px;'><b>ERRO SQL (Prepare Update):</b> " . $this->conn->error . "</div>");
+        }
+
+        $stmt->bind_param("ssdssdsi", $nome, $descricao, $preco, $categoria, $desconto, $especificacoes, $id);
+        
+        if (!$stmt->execute()) {
+            die("<div style='background:#222; color:#ff4444; padding:20px; border-left: 4px solid #ff4444; font-family:monospace; font-size:16px;'><b>ERRO SQL (Execute Update):</b> " . $stmt->error . "</div>");
+        }
+        return true;
     }
 
     // DELETE
