@@ -40,7 +40,7 @@ if (isset($_SESSION['carrinho'])) {
                     </a>
                 </li>
                 <li>
-                    <a href="comparar.php" class="nav-link">
+                    <a href="comparar.php" class="<?php echo ($current_page == 'comparar.php') ? 'active-link' : ''; ?>">
                         <i class="fas fa-balance-scale"></i> Comparar Hardware
                     </a>
                 </li>

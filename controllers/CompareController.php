@@ -19,25 +19,42 @@ class CompareController {
     }
 
     public function view() {
-        // Busca todos os produtos para preencher as caixas de seleção
-        $produtos = $this->productModel->getAllProducts();
+        $produtos   = $this->productModel->getAllProducts();
+        $categorias = $this->productModel->getCategorias();
         $title = 'Matriz de Comparação | Voidbyte Shop';
         require_once __DIR__ . '/../views/comparador.php';
     }
 
+    /**
+     * Aceita de 2 a 3 ids: comparar.php?action=ajax_compare&ids=4,7,9
+     */
     public function ajaxCompare() {
-        $idA = intval($_GET['id_a'] ?? 0);
-        $idB = intval($_GET['id_b'] ?? 0);
+        header('Content-Type: application/json; charset=utf-8');
 
-        $prodA = $this->productModel->getProductById($idA);
-        $prodB = $this->productModel->getProductById($idB);
+        $idsRaw = $_GET['ids'] ?? '';
+        $ids = array_slice(array_filter(array_map('intval', explode(',', $idsRaw))), 0, 3);
 
-        // Decodifica o JSON do banco para transformar em Array do PHP
-        if($prodA) $prodA['especificacoes'] = json_decode($prodA['especificacoes'] ?? '{}', true);
-        if($prodB) $prodB['especificacoes'] = json_decode($prodB['especificacoes'] ?? '{}', true);
+        if (count($ids) < 2) {
+            echo json_encode(['erro' => 'Selecione pelo menos dois produtos.']);
+            exit;
+        }
 
-        header('Content-Type: application/json');
-        echo json_encode(['produtoA' => $prodA, 'produtoB' => $prodB]);
+        $produtos = $this->productModel->getProductsByIds($ids);
+
+        foreach ($produtos as &$p) {
+            // Especificações viram array para o front montar a tabela
+            $specs = json_decode($p['especificacoes'] ?? '{}', true);
+            $p['especificacoes'] = is_array($specs) ? $specs : [];
+
+            // Preço já calculado com desconto, para não repetir a conta no JS
+            $desconto = floatval($p['desconto'] ?? 0);
+            $p['preco'] = floatval($p['preco']);
+            $p['preco_final'] = round($p['preco'] - ($p['preco'] * ($desconto / 100)), 2);
+            $p['desconto'] = $desconto;
+        }
+        unset($p);
+
+        echo json_encode(['produtos' => $produtos]);
         exit;
     }
 }

@@ -48,6 +48,14 @@
                 <button type="submit" class="btn-primary">
                     <i class="fas fa-sign-in-alt"></i> Inicializar Sessão
                 </button>
+
+                <br>
+                <br>
+                <div class="form-group" style="text-align: right; margin-top: -10px; margin-bottom: 15px;">
+                    <a href="recuperar_senha.php" style="color: var(--cyan-light); text-decoration: none; font-size: 0.9em;">
+                        <i class="fas fa-key"></i> Esqueci minha senha
+                    </a>
+                </div>
             </form>
 
             <div class="auth-footer">

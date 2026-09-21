@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 10/06/2026 às 00:40
+-- Tempo de geração: 21/09/2026 às 06:23
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -63,16 +63,18 @@ CREATE TABLE `usuarios` (
   `senha` varchar(255) NOT NULL,
   `tipo` enum('admin','cliente') DEFAULT 'cliente',
   `foto` varchar(255) DEFAULT 'https://cdn-icons-png.flaticon.com/512/149/149071.png',
-  `data_criacao` timestamp NOT NULL DEFAULT current_timestamp()
+  `data_criacao` timestamp NOT NULL DEFAULT current_timestamp(),
+  `reset_token` varchar(255) DEFAULT NULL,
+  `reset_expiracao` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Despejando dados para a tabela `usuarios`
 --
 
-INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `tipo`, `foto`, `data_criacao`) VALUES
-(1, 'Admin Supremo', 'admin@voidbyte.com', '$2y$10$gNYkngzFsh20vrc8hnMnNOp8Iyr/60r2wQxBC9Yz6TF3QllWCVKJu', 'admin', 'https://cdn-icons-png.flaticon.com/512/149/149071.png', '2026-06-08 17:41:31'),
-(2, 'Ian Gabriel', 'ianbielbia223@gmail.com', '$2y$10$htvoCKHwF3wn0IoxTo5ZfuJ.Wj6ki1UAvJtT1v5.AEJPR3KyiZ/Fy', 'cliente', 'https://cdn-icons-png.flaticon.com/512/149/149071.png', '2026-06-08 18:27:03');
+INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `tipo`, `foto`, `data_criacao`, `reset_token`, `reset_expiracao`) VALUES
+(1, 'Admin Supremo', 'admin@voidbyte.com', '$2y$10$ScaQHj1CSqoZW7392TpAlukwVZzKok.nlxmaIv9VzXpL5.F3BoRmC', 'admin', 'https://cdn-icons-png.flaticon.com/512/149/149071.png', '2026-06-08 17:41:31', NULL, NULL),
+(2, 'Ian Gabriel', 'ianbielbia223@gmail.com', '$2y$10$htvoCKHwF3wn0IoxTo5ZfuJ.Wj6ki1UAvJtT1v5.AEJPR3KyiZ/Fy', 'cliente', 'https://cdn-icons-png.flaticon.com/512/149/149071.png', '2026-06-08 18:27:03', NULL, NULL);
 
 --
 -- Índices para tabelas despejadas

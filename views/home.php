@@ -2,6 +2,11 @@
 
 <main>
     <section class="hero">
+            <div class="hero-bg">
+                <div class="hero-grid"></div>
+                <canvas id="hero-canvas"></canvas>
+                <div class="hero-scan"></div>
+            </div>
         <div class="hero-content">
             <span class="hero-badge">Acesso Liberado v2.0</span>
             <h1>Equipe seu setup no <span>Vazio</span></h1>
@@ -98,4 +103,5 @@
     </section>
 </main>
 
+<script src="assets/js/hero-bg.js"></script>
 <?php include __DIR__ . '/layout/footer.php'; ?>
