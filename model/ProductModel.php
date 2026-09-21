@@ -112,5 +112,12 @@ class ProductModel {
         while ($linha = $res->fetch_assoc()) { $cats[] = $linha['categoria']; }
         return $cats;
     }
+    
+    public function getProductsByCategoria($categoria) {
+        $stmt = $this->conn->prepare("SELECT * FROM produtos WHERE categoria = ? ORDER BY preco ASC");
+        $stmt->bind_param("s", $categoria);
+        $stmt->execute();
+        return $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
 }
 ?>

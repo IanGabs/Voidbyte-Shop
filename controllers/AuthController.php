@@ -66,7 +66,13 @@ class AuthController {
                 $_SESSION['user_type'] = $user['tipo']; 
                 $_SESSION['user_photo'] = $user['foto'];
 
-                header('Location: ' . ($user['tipo'] === 'admin' ? 'admin.php' : 'index.php'));
+                if (isset($_SESSION['pos_login_redirect'])) {
+                    $destino = $_SESSION['pos_login_redirect'];
+                    unset($_SESSION['pos_login_redirect']);
+                    header('Location: ' . $destino);
+                } else {
+                    header('Location: ' . ($user['tipo'] === 'admin' ? 'admin.php' : 'index.php'));
+                }
                 exit;
             } else {
                 $_SESSION['auth_erro'] = "Credenciais inválidas. Acesso negado.";

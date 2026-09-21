@@ -45,6 +45,11 @@ if (isset($_SESSION['carrinho'])) {
                     </a>
                 </li>
                 <li>
+                    <a href="montar-setup.php" class="<?php echo ($current_page == 'montar-setup.php') ? 'active-link' : ''; ?>">
+                        <i class="fas fa-tools"></i> Montar Setup
+                    </a>
+                </li>
+                <li>
                     <a href="carrinho.php" class="<?php echo ($current_page == 'carrinho.php') ? 'active-link' : ''; ?>">
                         <i class="fas fa-shopping-cart"></i> Cart 
                         <span class="carrinho-contador"><?php echo $totalItensCarrinho; ?></span>
