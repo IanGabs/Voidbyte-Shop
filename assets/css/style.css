@@ -2596,6 +2596,117 @@ footer::before {
     text-transform: uppercase;
     letter-spacing: .06em;
 }
+
+.perfil-topo {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    padding-bottom: 2rem;
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+}
+ 
+.perfil-avatar-wrapper {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    flex-shrink: 0;
+}
+ 
+.perfil-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--cyan);
+    box-shadow: var(--glow-cyan);
+}
+ 
+.perfil-avatar-editar {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--purple);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 2px solid var(--surface-2);
+    transition: all .2s;
+    font-size: .85rem;
+}
+ 
+.perfil-avatar-editar:hover {
+    background: var(--cyan);
+    transform: scale(1.08);
+}
+ 
+.perfil-info-topo h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.4rem;
+    margin-bottom: .7rem;
+}
+ 
+.perfil-badges {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: .6rem;
+}
+ 
+.badge-tipo-usuario {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+}
+ 
+.badge-admin {
+    background: rgba(249, 115, 22, .1);
+    color: var(--orange);
+    border: 1px solid var(--orange);
+}
+ 
+.badge-cliente {
+    background: var(--purple-dim);
+    color: var(--purple-light);
+    border: 1px solid var(--purple-light);
+}
+ 
+.badge-protocolo {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: .72rem;
+    background: var(--surface-2);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    font-family: 'Orbitron', sans-serif;
+}
+ 
+.perfil-membro-desde {
+    color: var(--text-dim);
+    font-size: .82rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+ 
+@media (max-width: 600px) {
+    .perfil-topo { flex-direction: column; text-align: center; }
+    .perfil-badges { justify-content: center; }
+    .perfil-membro-desde { justify-content: center; }
+}
  
 @media (max-width: 900px) {
     .checkout-grid,

@@ -41,7 +41,7 @@ class OrderModel {
             if (!$stmt) throw new Exception($this->conn->error);
 
             $stmt->bind_param(
-                "issssssssddd",
+                "isssssssssddd",
                 $usuarioId,
                 $dadosEntrega['nome'],
                 $dadosEntrega['endereco'],
