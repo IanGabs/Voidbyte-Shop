@@ -2701,6 +2701,182 @@ footer::before {
     align-items: center;
     gap: 8px;
 }
+
+/* =========================================
+   PÁGINA DE DETALHES DO PRODUTO (VOIDSHOP)
+   ========================================= */
+.detalhes-container {
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 20px;
+    color: #e0e0e0; /* Texto claro para o tema dark mode */
+}
+
+.detalhes-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 40px;
+    background-color: #1e1e24; /* Fundo principal da box */
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    border: 1px solid #2d2d35;
+}
+
+.detalhes-img-wrapper {
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #121215; /* Fundo mais escuro atrás da imagem */
+    border-radius: 8px;
+    padding: 20px;
+}
+
+.detalhes-img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+    transition: transform 0.3s ease;
+}
+
+.detalhes-img:hover {
+    transform: scale(1.03); /* Efeito de zoom suave ao passar o mouse */
+}
+
+.detalhes-info-wrapper {
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.detalhes-categoria {
+    display: inline-block;
+    background-color: #3b3b4f;
+    color: #a5a5ff;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    align-self: flex-start;
+}
+
+.detalhes-titulo {
+    font-size: 2.5rem;
+    margin: 0 0 10px 0;
+    color: #ffffff;
+}
+
+.detalhes-preco {
+    font-size: 2.2rem;
+    color: #4ade80; /* Verde estilo terminal/dev */
+    margin: 0 0 25px 0;
+    font-weight: bold;
+}
+
+.detalhes-descricao {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    margin-bottom: 30px;
+    color: #b0b0c0;
+}
+
+.detalhes-especificacoes {
+    background-color: #25252d;
+    padding: 25px;
+    border-radius: 8px;
+    margin-bottom: 30px;
+    border: 1px solid #33333e;
+}
+
+.detalhes-especificacoes h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    color: #ffffff;
+    border-bottom: 1px solid #3b3b4f;
+    padding-bottom: 10px;
+}
+
+.detalhes-especificacoes ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.detalhes-especificacoes li {
+    padding: 10px 0;
+    border-bottom: 1px solid #33333e;
+    display: flex;
+    justify-content: space-between;
+}
+
+.detalhes-especificacoes li:last-child {
+    border-bottom: none;
+}
+
+.spec-chave {
+    font-weight: 600;
+    color: #a5a5ff; /* Azul tecnológico */
+}
+
+.spec-valor {
+    color: #e0e0e0;
+    text-align: right;
+}
+
+.detalhes-form {
+    margin-top: auto;
+}
+
+.btn-comprar-detalhes {
+    width: 100%;
+    background-color: #6366f1; /* Roxo vibrante */
+    color: white;
+    border: none;
+    padding: 18px 20px;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.1s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.btn-comprar-detalhes:hover {
+    background-color: #4f46e5;
+}
+
+.btn-comprar-detalhes:active {
+    transform: scale(0.98);
+}
+
+/* Responsividade para celulares */
+@media (max-width: 768px) {
+    .detalhes-content {
+        padding: 20px;
+        gap: 20px;
+    }
+    .detalhes-titulo {
+        font-size: 1.8rem;
+    }
+    .detalhes-preco {
+        font-size: 1.6rem;
+    }
+    .detalhes-especificacoes li {
+        flex-direction: column;
+        gap: 5px;
+    }
+    .spec-valor {
+        text-align: left;
+    }
+}
  
 @media (max-width: 600px) {
     .perfil-topo { flex-direction: column; text-align: center; }
