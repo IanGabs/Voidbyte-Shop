@@ -1,5 +1,6 @@
 <?php
 require_once __DIR__ . '/../model/ProductModel.php';
+require_once __DIR__ . '/../model/GeminiService.php';
 
 class SetupController {
 
@@ -22,16 +23,25 @@ class SetupController {
     }
 
     public function router() {
-        $this->view();
+        $action = $_GET['action'] ?? 'view';
+
+        if ($action === 'ajax_ai') {
+            $this->ajaxAi();
+        } else {
+            $this->view();
+        }
     }
 
-    public function view() {
+    /**
+     * Carrega os produtos de cada slot, já com specs decodificadas e preço final.
+     * Usado tanto pela tela quanto pela IA.
+     */
+    private function carregarProdutosPorSlot(): array {
         $produtosPorSlot = [];
 
         foreach ($this->slots as $key => $slot) {
             $linhas = $this->productModel->getProductsByCategoria($slot['categoria']);
 
-            // Decodifica as especificações aqui para o JS não precisar fazer JSON.parse duplo
             foreach ($linhas as &$linha) {
                 $specs = json_decode($linha['especificacoes'] ?? '{}', true);
                 $linha['especificacoes'] = is_array($specs) ? $specs : [];
@@ -46,10 +56,12 @@ class SetupController {
             $produtosPorSlot[$key] = $linhas;
         }
 
+        return $produtosPorSlot;
+    }
+
+    public function view() {
+        $produtosPorSlot = $this->carregarProdutosPorSlot();
         $slots = $this->slots;
         $title = 'Montador de Setup | Voidbyte Shop';
 
-        require_once __DIR__ . '/../views/setup.php';
-    }
-}
-?>
+        require_once __DIR__

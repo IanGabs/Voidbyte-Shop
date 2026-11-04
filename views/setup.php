@@ -6,6 +6,29 @@
         <p>Escolha as peças e o sistema verifica compatibilidade de socket, memória, energia e formato em tempo real.</p>
     </div>
 
+    <!-- ===================== CONSULTA À IA ===================== -->
+    <section class="ia-box">
+        <h2><i class="fas fa-robot"></i> Monte com IA</h2>
+        <p>Descreva o que você quer fazer e o seu orçamento. A IA escolhe as peças da loja e preenche tudo abaixo.</p>
+
+        <form id="ia-setup-form" class="ia-form">
+            <textarea id="ia-pedido" class="input-modern" rows="2" maxlength="500"
+                      placeholder="Ex.: PC para programar e rodar Docker, orçamento de R$ 6.000"></textarea>
+            <button type="submit" id="ia-btn" class="btn-primary">
+                <i class="fas fa-magic"></i> Montar com IA
+            </button>
+        </form>
+
+        <div class="ia-sugestoes">
+            <span>Ideias rápidas:</span>
+            <button type="button" class="ia-chip" data-pedido="PC para jogos em Full HD com orçamento de R$ 5.000">Jogos até R$ 5.000</button>
+            <button type="button" class="ia-chip" data-pedido="PC para programar e rodar Docker com orçamento de R$ 6.000">Programação até R$ 6.000</button>
+            <button type="button" class="ia-chip" data-pedido="PC básico para escritório e estudos, o mais barato possível">Escritório barato</button>
+        </div>
+
+        <div id="ia-resultado" class="ia-resultado" hidden></div>
+    </section>
+
     <div class="setup-grid">
 
         <!-- ===================== COLUNA DE SELEÇÃO ===================== -->
@@ -74,5 +97,6 @@
     window.SETUP_SLOTS = <?php echo json_encode($slots, JSON_UNESCAPED_UNICODE); ?>;
 </script>
 <script src="assets/js/setup-builder.js"></script>
+<script src="assets/js/setup-ai.js"></script>
 
 <?php include __DIR__ . '/layout/footer.php'; ?>
