@@ -6,6 +6,28 @@
         <p>Cruze até três equipamentos e veja qual leva vantagem em cada critério.</p>
     </div>
 
+    <!-- ===================== COMPARAÇÃO COM IA ===================== -->
+    <section class="ia-box" style="margin-bottom: 2.5rem;">
+        <h2><i class="fas fa-robot"></i> Comparar com IA</h2>
+        <p>Descreva o que deseja comparar (ex: "Compare os mouses da loja" ou "Qual a diferença entre os teclados?")</p>
+
+        <form id="ia-compare-form" class="ia-form">
+            <input type="text" id="ia-compare-pedido" class="input-modern" 
+                   placeholder="Ex.: Compare os melhores hardwares de armazenamento ou mouses">
+            <button type="submit" id="ia-compare-btn" class="btn-primary">
+                <i class="fas fa-magic"></i> Comparar com IA
+            </button>
+        </form>
+
+        <div class="ia-sugestoes">
+            <span>Sugestões rápidas:</span>
+            <button type="button" class="ia-chip" data-pedido="Compare os mouses disponíveis">Mouses da loja</button>
+            <button type="button" class="ia-chip" data-pedido="Compare as opções de armazenamento SSD">SSDs disponíveis</button>
+        </div>
+
+        <div id="ia-compare-resultado" class="ia-resultado" hidden></div>
+    </section>
+
     <!-- Filtro de categoria -->
     <div class="form-group" style="max-width: 420px; margin-bottom: 2rem;">
         <label><i class="fas fa-filter"></i> Filtrar por categoria</label>
@@ -53,10 +75,6 @@
 </main>
 
 <script>
-/* =========================================================
-   Campos em que MENOR é melhor (latência, consumo, peso...).
-   Em todos os outros, maior valor numérico vence.
-   ========================================================= */
 const MENOR_E_MELHOR = ['latencia', 'latência', 'resposta', 'tempo', 'consumo',
                         'peso', 'ruido', 'ruído', 'preco', 'preço', 'cl'];
 
@@ -65,7 +83,6 @@ function menorEhMelhor(chave) {
     return MENOR_E_MELHOR.some(termo => c.includes(termo));
 }
 
-/** Extrai o primeiro número de um texto tipo "144 Hz" ou "1,5 GB" */
 function extrairNumero(valor) {
     if (valor === undefined || valor === null) return null;
     const m = String(valor).replace(',', '.').match(/-?\d+(\.\d+)?/);
@@ -76,22 +93,17 @@ function formatarBRL(n) {
     return 'R$ ' + Number(n).toFixed(2).replace('.', ',');
 }
 
-/* Filtro de categoria nos três selects */
 document.getElementById('filtro-categoria').addEventListener('change', function () {
     const cat = this.value;
-
     document.querySelectorAll('.select-compare').forEach(sel => {
         let precisaLimpar = false;
-
         sel.querySelectorAll('option[data-cat]').forEach(opt => {
             const visivel = (cat === '' || opt.dataset.cat === cat);
             opt.hidden = !visivel;
             if (!visivel && opt.selected) precisaLimpar = true;
         });
-
         if (precisaLimpar) sel.value = '';
     });
-
     compararHardwares();
 });
 
@@ -102,7 +114,6 @@ function compararHardwares() {
 
     const div = document.getElementById('resultado-comparacao');
 
-    // Impede comparar o mesmo produto duas vezes
     if (new Set(ids).size !== ids.length) {
         div.innerHTML = '<div class="compare-empty"><i class="fas fa-exclamation-triangle" style="color: var(--orange);"></i><h3>Produtos repetidos</h3><p>Escolha equipamentos diferentes em cada coluna.</p></div>';
         return;
@@ -131,25 +142,18 @@ function compararHardwares() {
 
 function montarTabela(prods) {
     const n = prods.length;
-
-    // ---- Reúne todas as chaves de specs de todos os produtos ----
     const todasChaves = [...new Set(prods.flatMap(p => Object.keys(p.especificacoes || {})))];
-
-    // ---- Vencedor de preço (menor preço final) ----
     const precos = prods.map(p => p.preco_final);
     const menorPreco = Math.min(...precos);
 
-    // ---- Pontuação por critério, para o custo-benefício ----
     const pontos = new Array(n).fill(0);
     let criteriosNumericos = 0;
-
     const vencedoresPorChave = {};
 
     todasChaves.forEach(chave => {
         const nums = prods.map(p => extrairNumero((p.especificacoes || {})[chave]));
         const validos = nums.filter(v => v !== null);
 
-        // Só dá pra eleger vencedor se todos tiverem valor numérico
         if (validos.length !== n || new Set(validos).size === 1) {
             vencedoresPorChave[chave] = [];
             return;
@@ -157,7 +161,6 @@ function montarTabela(prods) {
 
         criteriosNumericos++;
         const alvo = menorEhMelhor(chave) ? Math.min(...nums) : Math.max(...nums);
-
         const idxVencedores = [];
         nums.forEach((v, i) => {
             if (v === alvo) { idxVencedores.push(i); pontos[i] += 1; }
@@ -165,7 +168,6 @@ function montarTabela(prods) {
         vencedoresPorChave[chave] = idxVencedores;
     });
 
-    // ---- Custo-benefício: pontos ganhos por real gasto ----
     let idxCustoBeneficio = -1;
     if (criteriosNumericos > 0) {
         const scores = prods.map((p, i) => (pontos[i] / criteriosNumericos) / (p.preco_final || 1));
@@ -175,7 +177,6 @@ function montarTabela(prods) {
 
     const larguraCol = Math.floor(76 / n);
 
-    // ---- Cabeçalho ----
     let html = `<div class="compare-wrapper"><table class="compare-table">
         <thead><tr>
             <th style="width: 24%;">Especificação</th>`;
@@ -190,7 +191,6 @@ function montarTabela(prods) {
     });
     html += `</tr></thead><tbody>`;
 
-    // ---- Linha de preço ----
     html += `<tr><td class="compare-label">Preço final</td>`;
     prods.forEach(p => {
         const venceu = p.preco_final === menorPreco;
@@ -203,33 +203,21 @@ function montarTabela(prods) {
     });
     html += `</tr>`;
 
-    // ---- Linhas de especificações ----
     if (todasChaves.length === 0) {
-        html += `<tr><td colspan="${n + 1}" class="compare-vazio">
-            Nenhuma especificação técnica cadastrada para estes produtos.
-        </td></tr>`;
+        html += `<tr><td colspan="${n + 1}" class="compare-vazio">Nenhuma especificação técnica cadastrada para estes produtos.</td></tr>`;
     } else {
         todasChaves.forEach(chave => {
             const vencedores = vencedoresPorChave[chave] || [];
-
-            html += `<tr><td class="compare-label">${chave}
-                ${vencedores.length > 0 && menorEhMelhor(chave) ? '<i class="fas fa-arrow-down" title="Menor é melhor"></i>' : ''}
-            </td>`;
-
+            html += `<tr><td class="compare-label">${chave} ${vencedores.length > 0 && menorEhMelhor(chave) ? '<i class="fas fa-arrow-down" title="Menor é melhor"></i>' : ''}</td>`;
             prods.forEach((p, i) => {
                 const valor = (p.especificacoes || {})[chave];
                 const temValor = valor !== undefined && valor !== null && valor !== '';
                 const venceu = vencedores.includes(i);
-
-                html += `<td class="${venceu ? 'cell-win' : ''}">
-                    ${temValor ? valor : '<span class="sem-dado">—</span>'}
-                    ${venceu ? '<i class="fas fa-crown crown"></i>' : ''}
-                </td>`;
+                html += `<td class="${venceu ? 'cell-win' : ''}">${temValor ? valor : '<span class="sem-dado">—</span>'}${venceu ? '<i class="fas fa-crown crown"></i>' : ''}</td>`;
             });
             html += `</tr>`;
         });
 
-        // ---- Linha de placar ----
         html += `<tr class="linha-placar"><td class="compare-label">Critérios vencidos</td>`;
         prods.forEach((p, i) => {
             html += `<td><strong>${pontos[i]}</strong> <span style="color: var(--text-dim);">/ ${criteriosNumericos}</span></td>`;
@@ -237,7 +225,6 @@ function montarTabela(prods) {
         html += `</tr>`;
     }
 
-    // ---- Ação: adicionar ao carrinho ----
     html += `<tr><td class="compare-label"></td>`;
     prods.forEach(p => {
         html += `<td>
@@ -251,16 +238,84 @@ function montarTabela(prods) {
     });
     html += `</tr>`;
 
-    html += `</tbody></table></div>
-        <p class="compare-nota">
-            <i class="fas fa-info-circle"></i>
-            A coroa marca o melhor valor de cada linha. Critérios como latência, consumo,
-            peso e tempo de resposta são avaliados ao contrário: quanto menor, melhor.
-            Linhas em que nem todos os produtos têm valor numérico não entram no placar.
-        </p>`;
-
+    html += `</tbody></table></div>`;
     return html;
 }
+
+/* =========================================================
+   SCRIPT DE INTEGRAÇÃO DA IA NO COMPARADOR
+   ========================================================= */
+(function () {
+    const form = document.getElementById('ia-compare-form');
+    if (!form) return;
+
+    const input = document.getElementById('ia-compare-pedido');
+    const btn = document.getElementById('ia-compare-btn');
+    const out = document.getElementById('ia-compare-resultado');
+    const textBtn = btn.innerHTML;
+
+    function mostrarMsg(classe, texto) {
+        out.hidden = false;
+        out.className = 'ia-resultado ' + classe;
+        out.textContent = texto;
+    }
+
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const pedido = input.value.trim();
+        if (pedido.length < 3) {
+            mostrarMsg('ia-erro', 'Digite o que deseja comparar.');
+            return;
+        }
+
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Analisando...';
+        mostrarMsg('ia-carregando', 'A IA está selecionando os melhores itens...');
+
+        try {
+            const resp = await fetch('comparar.php?action=ajax_ai_compare', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ pedido })
+            });
+            const data = await resp.json();
+
+            if (!resp.ok || data.erro) {
+                mostrarMsg('ia-erro', data.erro || 'Erro ao processar.');
+                return;
+            }
+
+            // Preenche os selects automaticamente com os IDs retornados pela IA
+            const slots = ['a', 'b', 'c'];
+            slots.forEach((s, idx) => {
+                const sel = document.getElementById('select-prod-' + s);
+                if (sel) {
+                    sel.value = data.ids[idx] || '';
+                }
+            });
+
+            // Dispara a função de comparação para montar a tabela instantaneamente
+            compararHardwares();
+
+            out.hidden = false;
+            out.className = 'ia-resultado ia-ok';
+            out.innerHTML = `<strong>IA:</strong> ${data.explicacao}`;
+
+        } catch (err) {
+            mostrarMsg('ia-erro', 'Falha de comunicação com o servidor.');
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = textBtn;
+        }
+    });
+
+    document.querySelectorAll('.ia-chip').forEach(chip => {
+        chip.addEventListener('click', function () {
+            input.value = this.dataset.pedido;
+            input.focus();
+        });
+    });
+})();
 </script>
 
 <?php include __DIR__ . '/layout/footer.php'; ?>

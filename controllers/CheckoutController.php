@@ -1,9 +1,11 @@
 <?php
 require_once __DIR__ . '/../model/OrderModel.php';
+require_once __DIR__ . '/../model/CouponModel.php';
 
 class CheckoutController {
 
     private $orderModel;
+    private $couponModel;
 
     const FRETE_GRATIS_A_PARTIR_DE = 300.00;
     const VALOR_FRETE = 29.90;
@@ -12,9 +14,9 @@ class CheckoutController {
         if (session_status() === PHP_SESSION_NONE) { session_start(); }
         $this->checkAuth();
         $this->orderModel = new OrderModel();
+        $this->couponModel = new CouponModel();
     }
 
-    /** Precisa estar logado (admin ou cliente) para finalizar compra */
     private function checkAuth() {
         if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
             $_SESSION['auth_msg'] = "Faça login para finalizar sua compra.";
@@ -28,10 +30,12 @@ class CheckoutController {
         $action = $_POST['action'] ?? $_GET['action'] ?? 'view';
 
         switch ($action) {
-            case 'finalizar': $this->finalizar(); break;
-            case 'sucesso':   $this->sucesso(); break;
+            case 'aplicar_cupom': $this->aplicarCupom(); break;
+            case 'remover_cupom': $this->removerCupom(); break;
+            case 'finalizar':     $this->finalizar(); break;
+            case 'sucesso':       $this->sucesso(); break;
             case 'view':
-            default:          $this->view(); break;
+            default:              $this->view(); break;
         }
     }
 
@@ -41,14 +45,58 @@ class CheckoutController {
         foreach ($itens as $item) {
             $subtotal += $item['preco'] * $item['quantidade'];
         }
+        
         $frete = ($subtotal >= self::FRETE_GRATIS_A_PARTIR_DE || $subtotal == 0) ? 0.00 : self::VALOR_FRETE;
 
+        // Cálculo do Cupom armazenado na Sessão
+        $descontoCupom = 0;
+        $cupomAplicado = $_SESSION['cupom_aplicado'] ?? null;
+
+        if ($cupomAplicado) {
+            if ($cupomAplicado['tipo'] === 'percentual') {
+                $descontoCupom = round($subtotal * ($cupomAplicado['valor'] / 100), 2);
+            } else {
+                $descontoCupom = min($subtotal, floatval($cupomAplicado['valor']));
+            }
+        }
+
+        $total = max(0, ($subtotal - $descontoCupom) + $frete);
+
         return [
-            'itens' => $itens,
-            'subtotal' => $subtotal,
-            'frete' => $frete,
-            'total' => $subtotal + $frete
+            'itens'         => $itens,
+            'subtotal'      => $subtotal,
+            'frete'         => $frete,
+            'desconto_cupom'=> $descontoCupom,
+            'cupom_info'    => $cupomAplicado,
+            'total'         => $total
         ];
+    }
+
+    public function aplicarCupom() {
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: checkout.php');
+            exit;
+        }
+
+        $codigo = trim($_POST['codigo_cupom'] ?? '');
+        $cupom = $this->couponModel->getByCode($codigo);
+
+        if ($cupom) {
+            $_SESSION['cupom_aplicado'] = $cupom;
+            $_SESSION['checkout_msg'] = "Cupom '{$cupom['codigo']}' aplicado com sucesso!";
+        } else {
+            $_SESSION['checkout_erro'] = "Cupom inválido ou expirado.";
+        }
+
+        header('Location: checkout.php');
+        exit;
+    }
+
+    public function removerCupom() {
+        unset($_SESSION['cupom_aplicado']);
+        $_SESSION['checkout_msg'] = "Cupom removido com sucesso.";
+        header('Location: checkout.php');
+        exit;
     }
 
     public function view() {
@@ -61,9 +109,9 @@ class CheckoutController {
         $itensCarrinho = $totais['itens'];
         $subtotal = $totais['subtotal'];
         $frete = $totais['frete'];
+        $descontoCupom = $totais['desconto_cupom'];
+        $cupomInfo = $totais['cupom_info'];
         $total = $totais['total'];
-
-        // Pré-preenche nome com o do usuário logado (já disponível na sessão)
         $nomeUsuario = $_SESSION['user_name'] ?? '';
 
         $title = 'Finalizar Compra | Voidbyte Shop';
@@ -88,7 +136,6 @@ class CheckoutController {
             'forma_pagamento' => trim($_POST['forma_pagamento'] ?? ''),
         ];
 
-        // Validação simples de obrigatoriedade
         $obrigatorios = ['nome', 'endereco', 'numero', 'bairro', 'cidade', 'estado', 'cep', 'forma_pagamento'];
         foreach ($obrigatorios as $campo) {
             if ($dadosEntrega[$campo] === '') {
@@ -98,38 +145,16 @@ class CheckoutController {
             }
         }
 
-        if (strlen($dadosEntrega['estado']) !== 2) {
-            $_SESSION['checkout_erro'] = "Informe a UF do estado com 2 letras (ex: SP).";
-            header('Location: checkout.php');
-            exit;
-        }
-
-        $formasValidas = ['cartao', 'pix', 'boleto'];
-        if (!in_array($dadosEntrega['forma_pagamento'], $formasValidas)) {
-            $_SESSION['checkout_erro'] = "Selecione uma forma de pagamento válida.";
-            header('Location: checkout.php');
-            exit;
-        }
-
-        // Se for cartão, exige os campos simulados do cartão
-        if ($dadosEntrega['forma_pagamento'] === 'cartao') {
-            $numeroCartao = preg_replace('/\D/', '', $_POST['cartao_numero'] ?? '');
-            if (strlen($numeroCartao) < 13 || empty($_POST['cartao_nome']) || empty($_POST['cartao_validade']) || empty($_POST['cartao_cvv'])) {
-                $_SESSION['checkout_erro'] = "Preencha corretamente os dados do cartão.";
-                header('Location: checkout.php');
-                exit;
-            }
-        }
-
-        // Totais SEMPRE recalculados no servidor a partir da sessão —
-        // nunca confiar em valores vindos do formulário/cliente.
         $totais = $this->calcularTotais();
 
+        // Passa os dados financeiros calculados no servidor (incluindo o desconto do cupom)
         $pedidoId = $this->orderModel->createOrder(
             (int) $_SESSION['user_id'],
             $dadosEntrega,
             $totais['itens'],
-            $totais['frete']
+            $totais['frete'],
+            $totais['desconto_cupom'],
+            $totais['cupom_info']['codigo'] ?? null
         );
 
         if (!$pedidoId) {
@@ -138,8 +163,8 @@ class CheckoutController {
             exit;
         }
 
-        // Esvazia o carrinho e guarda o id do último pedido feito
         $_SESSION['carrinho'] = [];
+        unset($_SESSION['cupom_aplicado']);
         $_SESSION['ultimo_pedido_id'] = $pedidoId;
 
         header('Location: checkout.php?action=sucesso&pedido=' . $pedidoId);
@@ -148,22 +173,18 @@ class CheckoutController {
 
     public function sucesso() {
         $pedidoId = intval($_GET['pedido'] ?? 0);
-
-        // Só mostra se o id bate com o pedido que ESTE usuário acabou de criar
         if ($pedidoId <= 0 || ($_SESSION['ultimo_pedido_id'] ?? 0) != $pedidoId) {
             header('Location: index.php');
             exit;
         }
 
         $pedido = $this->orderModel->getOrderById($pedidoId, (int) $_SESSION['user_id']);
-
         if (!$pedido) {
             header('Location: index.php');
             exit;
         }
 
-        unset($_SESSION['ultimo_pedido_id']); // link de sucesso só funciona uma vez
-
+        unset($_SESSION['ultimo_pedido_id']);
         $title = 'Pedido Confirmado | Voidbyte Shop';
         require_once __DIR__ . '/../views/checkout_sucesso.php';
     }
