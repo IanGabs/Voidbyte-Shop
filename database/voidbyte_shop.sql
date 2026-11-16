@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 16/11/2026 às 20:46
+-- Tempo de geração: 16/11/2026 às 21:52
 -- Versão do servidor: 10.4.32-MariaDB
 -- Versão do PHP: 8.2.12
 
@@ -20,6 +20,27 @@ SET time_zone = "+00:00";
 --
 -- Banco de dados: `voidbyte_shop`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura para tabela `comentarios`
+--
+
+CREATE TABLE `comentarios` (
+  `id` int(11) NOT NULL,
+  `produto_id` int(11) NOT NULL,
+  `usuario_id` int(11) NOT NULL,
+  `texto` text NOT NULL,
+  `data_criacao` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Despejando dados para a tabela `comentarios`
+--
+
+INSERT INTO `comentarios` (`id`, `produto_id`, `usuario_id`, `texto`, `data_criacao`) VALUES
+(1, 28, 1, 'teste', '2026-11-16 20:51:35');
 
 -- --------------------------------------------------------
 
@@ -75,7 +96,8 @@ CREATE TABLE `pedidos` (
 --
 
 INSERT INTO `pedidos` (`id`, `usuario_id`, `nome_destinatario`, `endereco`, `numero`, `complemento`, `bairro`, `cidade`, `estado`, `cep`, `forma_pagamento`, `subtotal`, `frete`, `desconto_cupom`, `cupom_usado`, `total`, `status`, `data_criacao`) VALUES
-(1, 3, 'Amanda', 'Rua Pão de Queijo', '67', '', 'Goiabada', 'Sobremesa', 'SP', '18341-973', 'pix', 250.00, 29.90, 0.00, NULL, 279.90, 'confirmado', '2026-09-22 00:56:53');
+(1, 3, 'Amanda', 'Rua Pão de Queijo', '67', '', 'Goiabada', 'Sobremesa', 'SP', '18341-973', 'pix', 250.00, 29.90, 0.00, NULL, 279.90, 'confirmado', '2026-09-22 00:56:53'),
+(2, 1, 'Admin Supremo', 'Abobora', '31', '', 'Coelho', 'Natal', 'SP', '12345-678', 'pix', 405.00, 0.00, 0.00, NULL, 405.00, 'confirmado', '2026-11-16 20:36:24');
 
 -- --------------------------------------------------------
 
@@ -98,7 +120,8 @@ CREATE TABLE `pedido_itens` (
 --
 
 INSERT INTO `pedido_itens` (`id`, `pedido_id`, `produto_id`, `nome_produto`, `imagem_produto`, `preco_unitario`, `quantidade`) VALUES
-(1, 1, 6, 'Mouse Cyberpunk', './assets/imgs/default-hardware.png', 250.00, 1);
+(1, 1, 6, 'Mouse Cyberpunk', './assets/imgs/default-hardware.png', 250.00, 1),
+(2, 2, 28, 'Dock Station USB-C 12-em-1 Pro', './assets/imgs/products/hw_6afb580e3be0b.png', 405.00, 1);
 
 -- --------------------------------------------------------
 
@@ -183,6 +206,14 @@ INSERT INTO `usuarios` (`id`, `nome`, `email`, `senha`, `tipo`, `foto`, `data_cr
 --
 
 --
+-- Índices de tabela `comentarios`
+--
+ALTER TABLE `comentarios`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `produto_id` (`produto_id`),
+  ADD KEY `usuario_id` (`usuario_id`);
+
+--
 -- Índices de tabela `cupons`
 --
 ALTER TABLE `cupons`
@@ -221,6 +252,12 @@ ALTER TABLE `usuarios`
 --
 
 --
+-- AUTO_INCREMENT de tabela `comentarios`
+--
+ALTER TABLE `comentarios`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
 -- AUTO_INCREMENT de tabela `cupons`
 --
 ALTER TABLE `cupons`
@@ -230,13 +267,13 @@ ALTER TABLE `cupons`
 -- AUTO_INCREMENT de tabela `pedidos`
 --
 ALTER TABLE `pedidos`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de tabela `pedido_itens`
 --
 ALTER TABLE `pedido_itens`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de tabela `produtos`
@@ -253,6 +290,13 @@ ALTER TABLE `usuarios`
 --
 -- Restrições para tabelas despejadas
 --
+
+--
+-- Restrições para tabelas `comentarios`
+--
+ALTER TABLE `comentarios`
+  ADD CONSTRAINT `fk_comentario_produto` FOREIGN KEY (`produto_id`) REFERENCES `produtos` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_comentario_usuario` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE CASCADE;
 
 --
 -- Restrições para tabelas `pedidos`
