@@ -158,8 +158,7 @@
                 <?php if ($frete > 0): ?>
                     <p class="checkout-frete-dica">
                         <i class="fas fa-truck"></i>
-                        Faltam R$ <?php echo number_format(CheckoutController::FRETE_GRATIS_A_PARTIR_DE - $subtotal, 2, ',', '.'); ?>
-                        para o frete grátis.
+                        Faltam R$ <?php echo number_format(CheckoutController::FRETE_GRATIS_A_PARTIR_DE - $subtotal, 2, ',', '.'); ?> para o frete grátis.
                     </p>
                 <?php endif; ?>
 
@@ -168,7 +167,7 @@
                     <strong>R$ <?php echo number_format($total, 2, ',', '.'); ?></strong>
                 </div>
 
-                <!-- Bloco de Cupom de Desconto -->
+                <!-- Bloco de Cupom de Desconto (AGORA OPCIONAL - SEM O REQUIRED) -->
                 <div style="margin: 1.2rem 0; padding-top: 1rem; border-top: 1px solid var(--border);">
                     <?php if (isset($cupomInfo) && $cupomInfo): ?>
                         <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--green); padding: 8px 12px; border-radius: var(--radius); font-size: 0.85rem; color: var(--green);">
@@ -179,11 +178,11 @@
                             </form>
                         </div>
                     <?php else: ?>
-                        <form method="POST" action="checkout.php" style="display: flex; gap: 8px;">
-                            <input type="hidden" name="action" value="aplicar_cupom">
-                            <input type="text" name="codigo_cupom" class="input-modern" placeholder="Código do cupom (ex: VOIDBYTE10)" style="font-size: 0.85rem; padding: 8px 12px;" required>
-                            <button type="submit" class="btn-secondary" style="padding: 8px 14px; font-size: 0.85rem; white-space: nowrap;">Aplicar</button>
-                        </form>
+                        <div style="display: flex; gap: 8px;">
+                            <!-- O required foi removido daqui para não obrigar o preenchimento -->
+                            <input type="text" name="codigo_cupom" class="input-modern" placeholder="Código do cupom (opcional)" style="font-size: 0.85rem; padding: 8px 12px;">
+                            <button type="submit" name="action" value="aplicar_cupom" class="btn-secondary" style="padding: 8px 14px; font-size: 0.85rem; white-space: nowrap;">Aplicar</button>
+                        </div>
                     <?php endif; ?>
 
                     <?php if (isset($_SESSION['checkout_msg'])): ?>
@@ -195,11 +194,11 @@
                 <?php if (isset($descontoCupom) && $descontoCupom > 0): ?>
                     <div class="checkout-linha-total" style="color: var(--green);">
                         <span>Desconto do Cupom</span>
-                        <span>- R$ <?php echo number_format($descontoCupom, 2, ',', '.'); ?></span>
+                        <span>R$ <?php echo number_format($descontoCupom, 2, ',', '.'); ?></span>
                     </div>
                 <?php endif; ?>
 
-                <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1.2rem;">
+                <button type="submit" name="action" value="finalizar" class="btn-primary" style="width: 100%; margin-top: 1.2rem;">
                     <i class="fas fa-lock"></i> Confirmar Pedido
                 </button>
 
